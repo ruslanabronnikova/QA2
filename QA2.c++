@@ -1,9 +1,21 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 std::vector<double> solve_biquadratic(double a, double b, double c) {
     std::vector<double> solutions;
+
+    if (a == 0) {
+        if (b != 0) {
+            double x = -c / b;
+            if (x >= 0) {
+                solutions.push_back(std::sqrt(x));
+                solutions.push_back(-std::sqrt(x));
+            }
+        }
+        return solutions;
+    }
 
     double D = b * b - 4 * a * c;
 
@@ -69,16 +81,35 @@ int main() {
 
     std::vector<double> solutions = solve_biquadratic(a, b, c);
 
-    if (solutions.empty()) 
-        std::cout << "The equation has no solutions in real numbers!\n";
-    else {
-        std::cout << "Answer: ";
+    std::sort(solutions.begin(), solutions.end()); // сортировка корней
+    auto last = std::unique(solutions.begin(), solutions.end()); // удаление дубликатов
+    solutions.erase(last, solutions.end()); // очистка вектора от дубликатов
 
-        for (double x : solutions) 
-            std::cout << x << ' ';
+    int rootCount = solutions.size(); // подсчет уникальных корней
 
-        std::cout << '\n';
+    if (a != 0) {
+        if (solutions.size() == 4)
+            std::cout << "The equation has four roots\n";
+        else if (solutions.size() == 3)
+            std::cout << "The equation has three roots, one of them is a double root.\n";
+        else if (solutions.size() == 2)
+            std::cout << "The equation has two roots, both of them are double roots.\n";
+        else if (solutions.size() == 1)
+            std::cout << "The equation has one root, it is a quadruple root.\n";
     }
+    else if (b != 0) {
+        std::cout << "The equation is a quadratic equation and has two root.\n";
+    }
+    else {
+        std::cout << "The equation has no roots.\n";
+        exit(0);
+    }
+
+
+    for (double x : solutions)
+        std::cout << x << ' ';
+
+    std::cout << '\n';
 
     return 0;
 }
